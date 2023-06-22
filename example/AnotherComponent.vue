@@ -15,7 +15,7 @@ import Component from './SingletonComponent.vue';
 	let this_is_the_same_as_well = s.Component;
 
 	component.Hello();
-});
+})();
 </script>
 
 <style scoped>
