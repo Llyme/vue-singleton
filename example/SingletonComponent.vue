@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-
+defineExpose({
+	Hello() {
+		console.log('Hi!');
+	}
+});
 </script>
 
 <script lang="ts">
