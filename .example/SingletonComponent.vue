@@ -10,7 +10,7 @@ defineExpose({
 import { Singleton } from '..';
 
 export default Singleton({
-	name: 'NiceComponent'
+	name: 'SingletonComponent'
 });
 </script>
 

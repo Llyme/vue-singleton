@@ -11,10 +11,10 @@ import Component from './SingletonComponent.vue';
 
 	let component = Component.Self();
 	let this_is_the_same = Component.This();
-	let this_is_also_the_same = Singleton('Component');
+	let this_is_also_the_same = Singleton('SingletonComponent');
 	let this_is_the_same_as_well = s.Component;
 
-	component.Hello();
+	component.Hello(); // Hi!
 })();
 </script>
 
