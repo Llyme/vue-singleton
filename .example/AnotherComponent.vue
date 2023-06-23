@@ -7,7 +7,7 @@ import { Singleton, WaitFor, singletons as s } from '..';
 import Component from './SingletonComponent.vue';
 
 (async () => {
-	await WaitFor('Component');
+	await WaitFor('SingletonComponent');
 
 	let component = Component.Self();
 	let this_is_the_same = Component.This();
