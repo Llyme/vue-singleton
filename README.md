@@ -46,4 +46,4 @@ Multiple instances of the same component will throw an error.
 </template>
 ```
 
-More clarifications in the `example` folder.
+More clarifications in the `.example` folder.
