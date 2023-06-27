@@ -3,18 +3,21 @@ type TSingleton = {
 };
 
 type TResolves = {
+	// eslint-disable-next-line @typescript-eslint/ban-types
 	[name: string]: Function[]
 }
 
-export let singletons: TSingleton = {};
-let resolves: TResolves = {};
+export const singletons: TSingleton = {};
+const resolves: TResolves = {};
 
 export function Register(instance: any) {
-	let {
+	const {
 		mounted
 	} = instance;
 
 	let name: string = null;
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	let wait_for_resolves: Function[] = [];
 
 	function Getter() {
 		return Get(name);
@@ -26,23 +29,58 @@ export function Register(instance: any) {
 		This: Getter,
 		Self: Getter,
 
+		/**
+		 * Local `WaitFor` function.
+		 */
+		async WaitFor() {
+			if (name == null)
+				await new Promise(resolve => {
+					wait_for_resolves.push(resolve);
+				});
+
+			return await WaitFor(name);
+		},
+
 		mounted() {
+			// Call `mounted` hook first.
+
 			if (mounted != null)
 				mounted.apply(this);
 
+
+			// Record name as identifier.
+
 			name = this.$.type.name;
+			
+
+			// Call local `WaitFor` resolves.
+
+			for (const resolve of wait_for_resolves)
+				resolve();
+
+			wait_for_resolves = null;
+
+
+			// Check for duplicates.
 
 			if (name in singletons)
 				throw new Error(`[Singleton] Component '${name}' already exists!`);
 
+
+			// Register.
+
 			singletons[name] = this.$.exposed;
 
+
+			// Call global `WaitFor` resolves.
+
 			if (name in resolves) {
-				for (let resolve of resolves[name])
+				for (const resolve of resolves[name])
 					resolve();
 		
 				delete resolves[name];
 			}
+
 
 			console.log(`[Singleton] '${name}' has been registered.`);
 		}
@@ -61,19 +99,24 @@ export function Get(name: string) {
 }
 
 export function Has(...names: string[]) {
-	for (let name of names)
+	for (const name of names)
 		if (!(name in singletons))
 			return false;
 
 	return true;
 }
 
-export async function WaitFor(...names: string[]): Promise<any[]> {
+/**
+ * Returns the singleton based on the given identifier.
+ * 
+ * If multiple, returns an array in the same order.
+ */
+export async function WaitFor(...names: string[]): Promise<any|any[]> {
 	if (!names.length)
 		return [];
 
 	if (names.length == 1) {
-		let name = names[0];
+		const name = names[0];
 
 		if (name in singletons)
 			// It already exists.
@@ -89,9 +132,9 @@ export async function WaitFor(...names: string[]): Promise<any[]> {
 		return singletons[name];
 	}
 
-	let result: any = [];
+	const result: any = [];
 
-	for (let name of names)
+	for (const name of names)
 		result.push(await WaitFor(name));
 
 	return result;
